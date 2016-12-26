@@ -1,8 +1,12 @@
 {
   "name": "yion-body-parser",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A plugin for Yion framework : a body parser",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kevinbalicot/yion-body-parser.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
