@@ -1,6 +1,6 @@
 # YION BODY PARSER
 
-A body parser plugin for plugin [Yion](https://www.npmjs.com/package/yion)
+A body parser plugin for framework [Yion](https://www.npmjs.com/package/yion)
 
 ## Install
 
