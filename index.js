@@ -7,6 +7,8 @@ const Busboy = require('busboy');
 module.exports = {
     handle: (req, res, app) => {
         const request = req.original;
+        const response = res.original;
+
         if (request.method === 'POST') {
             const bus = new Busboy({ headers: request.headers });
             const tmpFiles = [];
@@ -22,14 +24,10 @@ module.exports = {
                 });
             });
 
-            bus.on('field', (fieldname, value) => {
-                req.body[fieldname] = value;
-            });
+            bus.on('field', (fieldname, value) => req.body[fieldname] = value);
+            bus.on('finish', () => app.dispatch(req, res));
 
-            bus.on('finish', () => {
-                app.dispatch(req, res);
-                tmpFiles.forEach(file => fs.unlink(file, () => {}));
-            });
+            response.on('finish', () => tmpFiles.forEach(file => fs.unlink(file, () => {})));
 
             request.pipe(bus);
         }
