@@ -30,6 +30,8 @@ module.exports = {
             response.on('finish', () => tmpFiles.forEach(file => fs.unlink(file, () => {})));
 
             request.pipe(bus);
+        } else {
+            app.dispatch(req, res);
         }
     }
 };
