@@ -5,6 +5,7 @@ const path = require('path');
 const Busboy = require('busboy');
 
 module.exports = {
+    type: 'post',
     handle: (req, res, app) => {
         const request = req.original;
         const response = res.original;
