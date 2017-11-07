@@ -6,12 +6,17 @@ const Busboy = require('busboy');
 
 module.exports = {
     type: 'post',
-    handle: (req, res, app) => {
+    handle: (req, res, app, next) => {
         const request = req.original;
         const response = res.original;
+        const headers = request.headers;
 
-        if (request.method === 'POST') {
-            const bus = new Busboy({ headers: request.headers });
+        if (request.method === 'POST' &&
+            headers['content-type'].match(/multipart\/form-data|application\/x-www-form-urlencoded/i)
+        ) {
+            req.body = {};
+
+            const bus = new Busboy({ headers });
             const tmpFiles = [];
 
             bus.on('file', (fieldname, file, filename, encoding, mimetype) => {
@@ -33,7 +38,7 @@ module.exports = {
 
             request.pipe(bus);
         } else {
-            app.dispatch(req, res);
+            next();
         }
     }
 };
