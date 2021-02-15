@@ -11,7 +11,7 @@ module.exports = {
         const response = res.original;
         const headers = request.headers;
 
-        if (request.method === 'POST' &&
+        if (request.method === 'POST' && headers['content-type'] &&
             headers['content-type'].match(/multipart\/form-data|application\/x-www-form-urlencoded/i)
         ) {
             req.body = {};
@@ -21,7 +21,7 @@ module.exports = {
 
             bus.on('file', (fieldname, file, filename, encoding, mimetype) => {
                 const saveTo = path.join(os.tmpdir(), path.basename(filename));
-                if (!tmpFiles.find(f => f == saveTo)) {
+                if (!tmpFiles.find(f => f === saveTo)) {
                     tmpFiles.push(saveTo);
                 }
 
@@ -31,7 +31,22 @@ module.exports = {
                 });
             });
 
-            bus.on('field', (fieldname, value) => req.body[fieldname] = value);
+            bus.on('field', (fieldname, value) => {
+                const objectMatcher = fieldname.match(/(\w+)\[(\w+)\]/i);
+                if (objectMatcher) {
+                    if (!req.body[objectMatcher[1]]) {
+                        req.body[objectMatcher[1]] = !Number.isNaN(parseInt(objectMatcher[2])) ? [] : {};
+                    }
+
+                    try {
+                        req.body[objectMatcher[1]][parseInt(objectMatcher[2]) || objectMatcher[2]] = JSON.parse(value);
+                    } catch (e) {
+                        req.body[objectMatcher[1]][parseInt(objectMatcher[2]) || objectMatcher[2]] = value;
+                    }
+                } else {
+                    req.body[fieldname] = value;
+                }
+            });
             bus.on('finish', () => app.dispatch(req, res));
 
             response.on('finish', () => tmpFiles.forEach(file => fs.unlink(file, () => {})));
