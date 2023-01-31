@@ -2,7 +2,7 @@ const os = require('os');
 const fs = require('fs');
 const path = require('path');
 
-const Busboy = require('busboy');
+const busboy = require('busboy');
 
 module.exports = {
     type: 'post',
@@ -16,7 +16,7 @@ module.exports = {
         ) {
             req.body = {};
 
-            const bus = new Busboy({ headers });
+            const bus = busboy({ headers });
             const tmpFiles = [];
 
             bus.on('file', (fieldname, file, filename, encoding, mimetype) => {

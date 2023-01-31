@@ -1,6 +1,6 @@
 {
   "name": "yion-body-parser",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A plugin for Yion framework : a body parser",
   "main": "index.js",
   "repository": {
@@ -13,6 +13,6 @@
   "author": "Kevin Balicot <kevinbalicot@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "busboy": "^0.2.14"
+    "busboy": "^1.6.0"
   }
 }
