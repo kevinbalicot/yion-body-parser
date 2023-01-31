@@ -20,7 +20,7 @@ module.exports = {
             const tmpFiles = [];
 
             bus.on('file', (fieldname, file, filename, encoding, mimetype) => {
-                const saveTo = path.join(os.tmpdir(), path.basename(filename));
+                const saveTo = path.join(os.tmpdir(), path.basename(filename || 'unknown'));
                 if (!tmpFiles.find(f => f === saveTo)) {
                     tmpFiles.push(saveTo);
                 }
