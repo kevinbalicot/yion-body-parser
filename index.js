@@ -19,7 +19,8 @@ module.exports = {
             const bus = busboy({ headers });
             const tmpFiles = [];
 
-            bus.on('file', (fieldname, file, filename, encoding, mimetype) => {
+            bus.on('file', (fieldname, file, info) => {
+                const { filename, encoding, mimetype } = info;
                 const saveTo = path.join(os.tmpdir(), path.basename(filename || 'unknown'));
                 if (!tmpFiles.find(f => f === saveTo)) {
                     tmpFiles.push(saveTo);
