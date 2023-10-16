@@ -18,7 +18,7 @@ module.exports = {
             const tmpFiles = [];
 
             bus.on('file', (fieldName, file, info) => {
-                const { filename, encoding, mimetype } = info;
+                const { filename, encoding, mimeType } = info;
                 const saveTo = path.join(os.tmpdir(), path.basename(filename || 'unknown'));
                 if (!tmpFiles.find(f => f === saveTo)) {
                     tmpFiles.push(saveTo);
@@ -26,7 +26,7 @@ module.exports = {
 
                 file.pipe(fs.createWriteStream(saveTo));
                 file.on('data', data => {
-                    req.body[fieldName] = { filename, encoding, mimetype, filepath: saveTo, length: data.length, data };
+                    req.body[fieldName] = { filename, encoding, mimeType, filepath: saveTo, length: data.length, data };
                 });
             });
 
