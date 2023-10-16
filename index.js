@@ -7,11 +7,9 @@ const busboy = require('busboy');
 module.exports = {
     type: 'post',
     handle: (req, res, app, next) => {
-        const request = req.original;
-        const response = res.original;
-        const headers = request.headers;
+        const headers = req.headers;
 
-        if (request.method === 'POST' && headers['content-type'] &&
+        if (req.method === 'POST' && headers['content-type'] &&
             headers['content-type'].match(/multipart\/form-data|application\/x-www-form-urlencoded/i)
         ) {
             req.body = {};
@@ -19,7 +17,7 @@ module.exports = {
             const bus = busboy({ headers });
             const tmpFiles = [];
 
-            bus.on('file', (fieldname, file, info) => {
+            bus.on('file', (fieldName, file, info) => {
                 const { filename, encoding, mimetype } = info;
                 const saveTo = path.join(os.tmpdir(), path.basename(filename || 'unknown'));
                 if (!tmpFiles.find(f => f === saveTo)) {
@@ -28,12 +26,12 @@ module.exports = {
 
                 file.pipe(fs.createWriteStream(saveTo));
                 file.on('data', data => {
-                    req.body[fieldname] = { filename, encoding, mimetype, filepath: saveTo, length: data.length, data };
+                    req.body[fieldName] = { filename, encoding, mimetype, filepath: saveTo, length: data.length, data };
                 });
             });
 
-            bus.on('field', (fieldname, value) => {
-                const objectMatcher = fieldname.match(/(\w+)\[(\w+)\]/i);
+            bus.on('field', (fieldName, value) => {
+                const objectMatcher = fieldName.match(/(\w+)\[(\w+)\]/i);
                 if (objectMatcher) {
                     if (!req.body[objectMatcher[1]]) {
                         req.body[objectMatcher[1]] = !Number.isNaN(parseInt(objectMatcher[2])) ? [] : {};
@@ -45,14 +43,14 @@ module.exports = {
                         req.body[objectMatcher[1]][parseInt(objectMatcher[2]) || objectMatcher[2]] = value;
                     }
                 } else {
-                    req.body[fieldname] = value;
+                    req.body[fieldName] = value;
                 }
             });
             bus.on('finish', () => app.dispatch(req, res));
 
-            response.on('finish', () => tmpFiles.forEach(file => fs.unlink(file, () => {})));
+            res.on('finish', () => tmpFiles.forEach(file => fs.unlink(file, () => {})));
 
-            request.pipe(bus);
+            req.pipe(bus);
         } else {
             next();
         }
