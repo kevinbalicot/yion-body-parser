@@ -47,6 +47,7 @@ module.exports = {
                 }
             });
             bus.on('finish', () => app.dispatch(req, res));
+            bus.on('error', () => app.dispatch(req, res));
 
             res.on('finish', () => tmpFiles.forEach(file => fs.unlink(file, () => {})));
 
